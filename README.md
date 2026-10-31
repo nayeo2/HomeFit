@@ -1,32 +1,42 @@
-# React + TypeScript + Vite
+# HomeFit
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+**개인 맞춤형 주택구입 가능성 사전진단 웹사이트**
 
-Currently, two official plugins are available:
+사용자가 소득·자산·기존 대출·희망 주택가격·필요 대출금액을 입력하면 주택구입 자금, 예상 상환액, LTV·DSR 관련 제약을 분석합니다.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+> 실제 금융기관의 대출 승인 또는 대출 가능금액을 보장하지 않습니다. 금융규제와 상품 조건은 적용일 및 공식 출처 확인이 필요합니다.
 
-## React Compiler
+## 핵심 기능
+- 5단계 입력: 기본정보 → 소득·자산 → 부채·신용 → 주택정보 → 대출조건
+- 필요 대출금액 직접 입력 및 자기자금 기반 부족액 계산
+- 대출 상환액, LTV, DSR, 스트레스 DSR(검증된 규칙이 있을 때만) 분석
+- 종합진단 결과, 상세 분석, 조건 변경 시뮬레이션
+- 개인 금융정보를 서버에 전송하거나 저장하지 않는 브라우저 내 처리
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 기술 스택
+React · TypeScript · Vite · Tailwind CSS · React Router · React Hook Form · Zod · Zustand · Recharts · Vitest
 
-## Expanding the Oxlint configuration
+## 시작하기
+Node.js LTS와 npm 설치 후 프로젝트 루트에서 실행합니다.
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+위 명령은 Vite 프로젝트와 `package.json`이 생성된 후 사용합니다.
+
+## 문서 안내
+| 문서 | 내용 |
+|---|---|
+| `AGENTS.md` | Codex 작업 원칙, 문서 참조 규칙, 개인정보·금융 정확성 제약 |
+| `docs/REQUIREMENTS.md` | MVP 범위, 필수 입력, 기능 요구사항, 완료 기준 |
+| `docs/SCREENS.md` | 페이지 URL, 입력 화면, 결과 탭 및 UX 동작 |
+| `docs/FINANCE_RULES.md` | 계산식, 진단 상태, 규제 검증 및 테스트 원칙 |
+| `docs/ROADMAP.md` | 설치부터 배포까지 개발 순서 |
+
+## 개인정보 원칙
+사용자 금융정보는 브라우저 메모리에서만 처리합니다. 새로고침 시 초기화하며 브라우저 저장소, 서버, 분석 도구, URL에 남기지 않습니다.
+
+## 현재 상태
+기획 및 문서화 단계. 실제 계산 엔진과 규제 데이터는 아직 구현·검증되지 않았습니다.
