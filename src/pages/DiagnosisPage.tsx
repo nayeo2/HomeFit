@@ -1,5 +1,4 @@
 ﻿import { Link } from 'react-router-dom'
-import { Card } from '../components/Card'
 import { Layout } from '../components/Layout'
 import { Navigate } from 'react-router-dom'
 import { BasicForm } from './BasicForm'
@@ -7,6 +6,7 @@ import { FinanceForm } from './FinanceForm'
 import { CreditForm } from './CreditForm'
 import { HouseForm } from './HouseForm'
 import { LoanForm } from './LoanForm'
+import { ResultPage } from './ResultPage'
 import { accessibleDiagnosisStep, useDiagnosisStore } from '../store/diagnosis'
 
 import { diagnosisSteps } from '../diagnosisSteps'
@@ -53,10 +53,7 @@ export function DiagnosisPage({ stepIndex }: { stepIndex: number }) {
         <section aria-labelledby="diagnosis-title">
           <p className="eyebrow">전체 6단계 중 {stepIndex + 1}단계</p>
           <h1 id="diagnosis-title">{step.title}</h1>
-          {stepIndex === 0 ? <BasicForm /> : stepIndex === 1 ? <FinanceForm /> : stepIndex === 2 ? <CreditForm /> : stepIndex === 3 ? <HouseForm /> : stepIndex === 4 ? <LoanForm /> : <Card className="diagnosis-placeholder">
-            <p>{stepIndex === 5 ? '진단 결과 화면을 준비하고 있어요.' : '이 단계의 입력 화면을 준비하고 있어요.'}</p>
-            <p>현재는 단계별 안내 화면만 제공하며 입력이나 계산은 진행되지 않습니다.</p>
-          </Card>}
+          {stepIndex === 0 ? <BasicForm /> : stepIndex === 1 ? <FinanceForm /> : stepIndex === 2 ? <CreditForm /> : stepIndex === 3 ? <HouseForm /> : stepIndex === 4 ? <LoanForm /> : <ResultPage />}
           <Link to="/">홈으로 돌아가기</Link>
         </section>
       </div>

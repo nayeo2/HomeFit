@@ -35,7 +35,7 @@ function LandingPage() {
           <h1 id="welcome-title">내 집 마련 가능성,<br />내 상황에 맞춰 살펴보세요</h1>
           <p className="intro">보유 자금부터 대출 조건, 매달 상환 부담까지.<br />주택 구입을 준비하는 데 필요한 정보를 한곳에서 살펴보는 사전진단 서비스입니다.</p>
           <Link className="button" to="/diagnosis/basic" aria-describedby="diagnosis-status">내 집 마련 진단 시작하기</Link>
-          <p id="diagnosis-status" className="availability-note">현재 단계별 안내 화면만 제공하며, 입력과 진단 기능은 준비 중입니다.</p>
+          <p id="diagnosis-status" className="availability-note">5단계 입력 후 참고용 결과와 시뮬레이션을 확인할 수 있습니다. 검증 정보가 없는 규제 항목은 확인 필요로 표시합니다.</p>
           <p className="privacy-note">회원가입 없이 이용하는 HomeFit. 개인 금융정보는 브라우저 메모리에서만 처리하며 저장하거나 서버로 전송하지 않습니다.</p>
         </section>
 
@@ -43,7 +43,7 @@ function LandingPage() {
           <div className="section-heading">
             <p className="eyebrow">미리 살펴볼 세 가지</p>
             <h2 id="features-title">내 집 마련, 숫자로 차근차근</h2>
-            <p>HomeFit이 제공할 주요 기능을 소개합니다.</p>
+            <p>HomeFit의 주요 기능을 소개합니다.</p>
           </div>
           <div className="feature-grid">
             {features.map((feature) => (

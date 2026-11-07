@@ -98,12 +98,34 @@ h1 { font-size: clamp(28px, 5vw, 44px); line-height: 1.35; letter-spacing: -0.04
 .finance-group legend { font-size: 20px; font-weight: 700; margin-bottom: 16px; }
 .form-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 .form-actions .button { flex: 1 1 220px; }
+.diagnosis-results { display: grid; gap: 24px; margin-block: 24px; }
+.diagnosis-results h2 { font-size: 20px; margin-bottom: 12px; }
+.result-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.result-grid > .card { min-width: 0; }
+.result-metric { padding-block: 12px; border-bottom: 1px solid #DFE5EE; }
+.result-metric dt { color: #526078; font-size: 14px; }
+.result-metric dd { margin: 6px 0 0; font-size: 18px; font-weight: 700; overflow-wrap: anywhere; }
+.result-metric dd p { margin-top: 6px; font-size: 14px; font-weight: 400; }
+.verification-label { color: #855100 !important; font-size: 14px; font-weight: 700; }
+.result-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.result-tabs button { padding: 12px 20px; min-height: 48px; border: 1px solid #DFE5EE; border-radius: 12px; background: white; color: var(--color-text); cursor: pointer; }
+.result-tabs [aria-selected='true'] { background: #E6EFFF; color: var(--color-primary); border-color: var(--color-primary); font-weight: 700; }
+.scenario-comparison { display: grid; gap: 20px; min-width: 0; }
+.scenario-comparison form { margin-block: 20px; }
+.scenario-table-wrap { overflow-x: auto; border: 1px solid #DFE5EE; border-radius: 16px; background: white; }
+.scenario-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.scenario-table caption { padding: 16px; text-align: left; font-weight: 700; }
+.scenario-table th, .scenario-table td { padding: 16px; border-top: 1px solid #DFE5EE; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+.scenario-table thead { background: #EAF0F8; }
+.scenario-table td p { font-size: 13px; color: #526078; }
 
 @media (max-width: 800px) {
   .feature-grid, .steps { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {
+  .result-grid { grid-template-columns: 1fr; }
+  .scenario-table th, .scenario-table td { padding: 8px; font-size: 13px; }
   .diagnosis-progress { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .container { padding-inline: 20px; }
   main { padding-block: 40px; }
