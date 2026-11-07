@@ -7,6 +7,8 @@ import { creditSchema, emptyCredit } from '../validation/credit'
 import type { CreditDraft } from '../validation/credit'
 import { emptyHouse, houseSchema } from '../validation/house'
 import type { HouseDraft } from '../validation/house'
+import { emptyLoanConditions, loanConditionsSchema, normalizeLoanConditions } from '../validation/loan'
+import type { LoanConditionsDraft } from '../validation/loan'
 
 type DiagnosisState = {
   basic: BasicDraft
@@ -17,6 +19,10 @@ type DiagnosisState = {
   creditCompleted: boolean
   house: HouseDraft
   houseCompleted: boolean
+  loan: LoanConditionsDraft
+  loanCompleted: boolean
+  saveLoanDraft: (loan: LoanConditionsDraft) => void
+  completeLoan: (loan: LoanConditionsDraft) => boolean
   saveHouseDraft: (house: HouseDraft) => void
   completeHouse: (house: HouseDraft) => boolean
   saveCreditDraft: (credit: CreditDraft) => void
@@ -30,8 +36,8 @@ type DiagnosisState = {
 const basicChanged = (previous: BasicDraft, next: BasicDraft) =>
   (Object.keys(previous) as (keyof BasicDraft)[]).some((key) => previous[key] !== next[key])
 
-export function accessibleDiagnosisStep(basicCompleted: boolean, financeCompleted: boolean, creditCompleted = false, houseCompleted = false) {
-  return !basicCompleted ? 0 : !financeCompleted ? 1 : !creditCompleted ? 2 : houseCompleted ? 4 : 3
+export function accessibleDiagnosisStep(basicCompleted: boolean, financeCompleted: boolean, creditCompleted = false, houseCompleted = false, loanCompleted = false) {
+  return !basicCompleted ? 0 : !financeCompleted ? 1 : !creditCompleted ? 2 : !houseCompleted ? 3 : loanCompleted ? 5 : 4
 }
 
 // Session memory only: no persistence middleware or storage.
@@ -44,32 +50,47 @@ export const useDiagnosisStore = create<DiagnosisState>((set, get) => ({
   creditCompleted: false,
   house: { ...emptyHouse },
   houseCompleted: false,
-  saveHouseDraft: (house) => set({ house, houseCompleted: false }),
+  loan: { ...emptyLoanConditions },
+  loanCompleted: false,
+  saveLoanDraft: (loan) => set({ loan: normalizeLoanConditions(loan), loanCompleted: false }),
+  completeLoan: (loan) => {
+    const state = get()
+    const result = loanConditionsSchema.safeParse(loan)
+    if (!state.basicCompleted || !state.financeCompleted || !state.creditCompleted || !state.houseCompleted || !result.success) {
+      set({ loanCompleted: false })
+      return false
+    }
+    set({ loan: result.data, loanCompleted: true })
+    return true
+  },
+  saveHouseDraft: (house) => set({ house, houseCompleted: false, loanCompleted: false }),
   completeHouse: (house) => {
     const state = get()
     const result = houseSchema.safeParse(house)
     if (!state.basicCompleted || !state.financeCompleted || !state.creditCompleted || !result.success) {
-      set({ houseCompleted: false })
+      set({ houseCompleted: false, loanCompleted: false })
       return false
     }
-    set({ house: result.data, houseCompleted: true })
+    const changed = (Object.keys(result.data) as (keyof HouseDraft)[]).some((key) => state.house[key] !== result.data[key])
+    set({ house: result.data, houseCompleted: true, loanCompleted: changed ? false : state.loanCompleted })
     return true
   },
-  saveCreditDraft: (credit) => set({ credit, creditCompleted: false, houseCompleted: false }),
+  saveCreditDraft: (credit) => set({ credit, creditCompleted: false, houseCompleted: false, loanCompleted: false }),
   completeCredit: (credit) => {
     const state = get()
     const result = creditSchema.safeParse(credit)
     if (!state.basicCompleted || !state.financeCompleted || !result.success) {
-      set({ creditCompleted: false, houseCompleted: false })
+      set({ creditCompleted: false, houseCompleted: false, loanCompleted: false })
       return false
     }
     const changed = JSON.stringify(state.credit) !== JSON.stringify(result.data)
-    set({ credit: result.data, creditCompleted: true, houseCompleted: changed ? false : state.houseCompleted })
+    set({ credit: result.data, creditCompleted: true, houseCompleted: changed ? false : state.houseCompleted, loanCompleted: changed ? false : state.loanCompleted })
     return true
   },
   saveBasicDraft: (basic) => set((state) => ({
     basic,
     basicCompleted: basicChanged(state.basic, basic) ? false : state.basicCompleted,
+    loanCompleted: basicChanged(state.basic, basic) ? false : state.loanCompleted,
     houseCompleted: basicChanged(state.basic, basic) ? false : state.houseCompleted,
     creditCompleted: basicChanged(state.basic, basic) ? false : state.creditCompleted,
     finance: normalizeFinance(state.finance, basic),
@@ -78,23 +99,24 @@ export const useDiagnosisStore = create<DiagnosisState>((set, get) => ({
   completeBasic: (basic) => set((state) => ({
     basic,
     basicCompleted: basicSchema.safeParse(basic).success,
+    loanCompleted: basicChanged(state.basic, basic) ? false : state.loanCompleted,
     houseCompleted: basicChanged(state.basic, basic) ? false : state.houseCompleted,
     creditCompleted: basicChanged(state.basic, basic) ? false : state.creditCompleted,
     finance: normalizeFinance(state.finance, basic),
     financeCompleted: basicChanged(state.basic, basic) ? false : state.financeCompleted,
   })),
   saveFinanceDraft: (finance) => set((state) => ({
-    finance: normalizeFinance(finance, state.basic), financeCompleted: false, creditCompleted: false, houseCompleted: false,
+    finance: normalizeFinance(finance, state.basic), financeCompleted: false, creditCompleted: false, houseCompleted: false, loanCompleted: false,
   })),
   completeFinance: (finance) => {
     const state = get()
     const result = createFinanceSchema(state.basic).safeParse(finance)
     if (!state.basicCompleted || !result.success) {
-      set({ financeCompleted: false, creditCompleted: false, houseCompleted: false })
+      set({ financeCompleted: false, creditCompleted: false, houseCompleted: false, loanCompleted: false })
       return false
     }
     const changed = (Object.keys(result.data) as (keyof FinanceDraft)[]).some((key) => state.finance[key] !== result.data[key])
-    set({ finance: result.data, financeCompleted: true, creditCompleted: changed ? false : state.creditCompleted, houseCompleted: changed ? false : state.houseCompleted })
+    set({ finance: result.data, financeCompleted: true, creditCompleted: changed ? false : state.creditCompleted, houseCompleted: changed ? false : state.houseCompleted, loanCompleted: changed ? false : state.loanCompleted })
     return true
   },
 }))
